@@ -22,17 +22,41 @@ namespace Common {
  * Maps an array to an array of 0s and 1s for stream compaction. Elements
  * which map to 0 will be removed, and elements which map to 1 will be kept.
  */
-__global__ void kernMapToBoolean(int n, int *bools, const int *idata) {
+	__global__ void kernMapToBoolean(int n, int *bools, const int *idata) {
     // TODO
+		int k = threadIdx.x;
+	
+		if (idata[k] == 0)bools[k] = 0;
+		else bools[k] = 1;
+		/*for (int i = 0; i < n; i++){
+			if (idata[i] == 0) bools[i] = 0;
+			else {
+				bools[i] = 1;
+			}
+		}*/
+
 }
 
 /**
  * Performs scatter on an array. That is, for each element in idata,
  * if bools[idx] == 1, it copies idata[idx] to odata[indices[idx]].
  */
-__global__ void kernScatter(int n, int *odata,
-        const int *idata, const int *bools, const int *indices) {
+__global__ void kernScatter(int n, int *odata,const int *idata, const int *bools, const int *indices) {
+	//last, dev_odata, dev_idata, dev_bool, dev_boolb
+	//indices[i]={0,1,2,3,4},n is the muber of indices
     // TODO
+	/*for (int i = 0; i < n; i++){
+		if (bools[i] == 1)
+		{
+			odata[indices[i]] = idata[i];
+		}
+	}*/
+	//for (int i = 0; i < n; i++){ odata[i] = 0; }
+	int k = threadIdx.x;
+	if (bools[k] == 1){
+		int t = indices[k];//
+		odata[t] = idata[k];
+	}
 }
 
 }

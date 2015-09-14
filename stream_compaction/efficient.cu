@@ -65,18 +65,31 @@ void scan(int n, int *odata, const int *idata) {
 	else num = n;
 	int *_idata = new int[num];
 	init(num, idata);
+	float ms=0;
+	cudaEvent_t start, stop;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
+	cudaEventRecord(start);
+	cudaEventRecord(stop);
+	cudaEventSynchronize(stop);
+
+	cudaEventElapsedTime(&ms, start, stop);
 	for (int d = 0; d <= ilog2ceil(num) - 1; d++){
 		p1 = pow(2, d);
 		p2 = pow(2, d + 1);
-		Uscan << <1, num >> >(p1, p2, dev_A1);
+		Uscan << <1, 512 >> >(p1, p2, dev_A1);
 	}
 	put0 << <1, 1 >> >(dev_A1, num);
 	for (int d = ilog2ceil(num) - 1; d >= 0; d--){
 		p1 = pow(2, d);
 		p2 = pow(2, d + 1);
-		Dscan << <1, num >> >(p1, p2, dev_A1);
+		Dscan << <1, 512 >> >(p1, p2, dev_A1);
 	
 	}
+	cudaEventSynchronize(stop);
+
+	cudaEventElapsedTime(&ms, start, stop);
+	printf("\t time of 3.1 efficient function1: %f ms\n", ms);
 	cudaMemcpy(odata, dev_A1, num* sizeof(int), cudaMemcpyDeviceToHost);//destination,source,
 	cudaFree(dev_A1);
 
@@ -112,7 +125,7 @@ int compact(int n, int *odata, const int *idata) {
 
 	cudaMalloc((void**)&dev_bool, _size);
 	cudaMalloc((void**)&dev_boolb, _size);
-
+	cudaMalloc((void**)&dev_odata, _size);
 	cudaMalloc((void**)&dev_idata, _size);
 	cudaMemcpy(dev_idata, idata, _size, cudaMemcpyHostToDevice);
 
@@ -120,11 +133,13 @@ int compact(int n, int *odata, const int *idata) {
 	int hst;
 	int last;
 	//step 1
+
 	Common::kernMapToBoolean <<< 1, n >>>(n, dev_bool, dev_idata);
-	cudaMemcpy(dev_boolb, dev_bool, _size, cudaMemcpyDeviceToDevice);
+	Common::kernMapToBoolean << < 1, n >> >(n, dev_boolb, dev_idata);//back_up
 	//cudaMemcpy(&hst, &dev_idata[6],sizeof(int), cudaMemcpyDeviceToHost);
 	//std::cout << hst;
    //Step 2 
+
 	for (int d = 0; d <= ilog2ceil(num) - 1; d++){
 			p1 = pow(2, d);
 			p2 = pow(2, d + 1);
@@ -138,28 +153,23 @@ int compact(int n, int *odata, const int *idata) {
 			p2 = pow(2, d + 1);
 			Dscan <<<1, num >> >(p1, p2, dev_boolb);
 			}
+
+
+	//???????????my dev_idata changed its value here...have no idea why.
 	cudaMemcpy(dev_idata, idata, _size, cudaMemcpyHostToDevice);
-	//my dev_idata changed...have no idea why.
-	////////////???????????????????????/////////////
+    ////???????????????????????/////////////
 	//cudaMemcpy(&hst, &dev_idata[6], sizeof(int), cudaMemcpyDeviceToHost);
 	//std::cout << hst << "ss2";
     //Step 3 : Scatter
 	//cudaMemcpy(&hst, &dev_idata[2],sizeof(int), cudaMemcpyDeviceToHost);
 	//std::cout << hst;
 	cudaMemcpy(&last, &(dev_boolb[num - 1]), sizeof(int), cudaMemcpyDeviceToHost);
-	cudaMalloc((void**)&dev_odata, last*sizeof(int));
-	
+	//cudaMalloc((void**)&dev_odata, last*sizeof(int));
+
 	Common::kernScatter <<<1, num >> >(last, dev_odata, dev_idata, dev_bool, dev_boolb);
-	
+
 	cudaMemcpy(odata, dev_odata, last*sizeof(int), cudaMemcpyDeviceToHost);
 	
-	cudaFree(dev_bool);
-	cudaFree(dev_boolb);
-	cudaFree(dev_odata);
-
-	cudaFree(dev_idata);
-
-
 	printf("3.2\n");
     return last;
 }

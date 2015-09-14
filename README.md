@@ -13,14 +13,6 @@ The results are marked by the number of requirements.
 
 * GPU Scan implementations (not included in code)(Naive, Work-Efficient, and
   Thrust) to the serial CPU version of Scan. 
- GPU/CPU method:
-  | Method  |  time1  (ms)       |time2 (ms)|
-  |CPUscan|0|0|
-  | Thrust: |  0.002304   |0.002304|
-  | Naive   |  0.002304   |0.002304|
-  |Work-Efficient compact|0.007|0.007|
-  |Work-Efficient scan|0.006|0.007|
-  (time1 is power of two, time2 is non power of two)
   ![](graph.png)
 *the time line of thrust is seperate. It runs evey few seconds.
 	
@@ -35,18 +27,18 @@ The results are marked by the number of requirements.
 ****************
     [  38  19  38  37   5  47  15  35   0  12   3   0  42 ...  26   0 ]
 ==== cpu scan, power-of-two ====
-1.1    [   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6203 6229 ]
+    1.1    [   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6203 6229 ]
 ==== cpu scan, non-power-of-two ====
-1.1    [   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6146 6190 ]
+    1.1    [   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6146 6190 ]
     passed
 ==== naive scan, power-of-two ====
-2.1    [   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6203 6229 ]
+    2.1    [   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6203 6229 ]
     passed
 ==== naive scan, non-power-of-two ====
-2.1    [   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6203 6229 ]
+    2.1    [   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6203 6229 ]
     passed
 ==== work-efficient scan, power-of-two ====
-3.1
+    3.1
     [   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6203 6229 ]
     passed
 ==== work-efficient scan, non-power-of-two ====

@@ -8,8 +8,14 @@ CUDA Stream Compaction
 
 ### README
 The results are marked by the number of requirements.
+ 1 : CPU Scan & Compaction 
+ 2 : Naive Scan (naive.cu)
+ 3.1 : Work-Efficient Scan 
+ 3.2 Compaction (efficient.cu)
+ 4 : Thrust Scan (thrust.cu)
 
 ### Questions
+blocksize compare: to be honest,changing blocksize does not make much difference..
 
 * GPU Scan implementations (not included in code)(Naive, Work-Efficient, and
   Thrust) to the serial CPU version of Scan. 
@@ -25,17 +31,22 @@ The results are marked by the number of requirements.
 ****************
 ** SCAN TESTS **
 ****************
+
     [  38  19  38  37   5  47  15  35   0  12   3   0  42 ...  26   0 ]
 ==== cpu scan, power-of-two ====
-    1.1    [   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6203 6229 ]
+    1.1    
+	[   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6203 6229 ]
 ==== cpu scan, non-power-of-two ====
-    1.1    [   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6146 6190 ]
+    1.1    
+	[   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6146 6190 ]
     passed
 ==== naive scan, power-of-two ====
-    2.1    [   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6203 6229 ]
+    2.1    
+	[   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6203 6229 ]
     passed
 ==== naive scan, non-power-of-two ====
-    2.1    [   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6203 6229 ]
+    2.1    
+	[   0  38  57  95 132 137 184 199 234 234 246 249 249 ... 6203 6229 ]
     passed
 ==== work-efficient scan, power-of-two ====
     3.1
